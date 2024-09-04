@@ -34,7 +34,7 @@ const Signup = () => {
         });
 
         if (response.ok) {
-            navigate("/login");
+            navigate("/signin");
         } else {
             const data = await response.json();
             setError(data.error || "An error occurred during registration");
@@ -42,7 +42,7 @@ const Signup = () => {
     };
 
     const handleLoginRedirect = () => {
-        navigate("/login");
+        navigate("/signin");
     };
 
     return (

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Form, Button, Alert } from "react-bootstrap";
 
-const Login = () => {
+const Signin = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState(null);
@@ -11,7 +11,7 @@ const Login = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const response = await fetch(process.env.REACT_APP_BACKEND_URL + "/login", {
+        const response = await fetch(process.env.REACT_APP_BACKEND_URL + "/signin", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -78,4 +78,4 @@ const Login = () => {
     );
 };
 
-export default Login;
+export default Signin;
