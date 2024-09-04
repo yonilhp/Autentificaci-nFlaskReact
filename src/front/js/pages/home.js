@@ -1,16 +1,14 @@
-import React, { useContext } from "react";
-import { Context } from "../store/appContext";
-import Signup from '../component/Signup.jsx';
-import "../../styles/home.css";
-import Signin from "../component/Signin.jsx";
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
-export const Home = () => {
-	const { store, actions } = useContext(Context);
+const Home = () => {
+    const navigate = useNavigate();
 
-	return (
-		<div className="text-center mt-5">
-			
-			<Signin/>
-		</div>
-	);
+    useEffect(() => {
+        navigate("/signin");
+    }, [navigate]);
+
+    return null; // No renderiza nada ya que redirige inmediatamente
 };
+
+export default Home;
