@@ -10,6 +10,10 @@ const getState = ({ getStore, getActions, setStore }) => {
         },
         actions: {
             // Acción para registrar un nuevo usuario
+            cleanBanner:()=>{
+                let store=getStore()
+                setStore({...store,signupError: null,signupSuccess: null})
+            },
             signup: async (firstName, lastName, email, password, confirmPassword) => {
                 const store = getStore();
 
@@ -41,13 +45,15 @@ const getState = ({ getStore, getActions, setStore }) => {
 
                     if (!response.ok) {
                         const data = await response.json();
-                        setStore({ signupError: data.error || "Error al registrarse" });
-                        return;
+                        setStore({ ...getStore(), signupError: data.error || "Error al registrarse" });
+                        return false;
                     }
 
-                    setStore({ signupSuccess: "Usuario registrado exitosamente" });
+                    setStore({  ...getStore(), signupSuccess: "Usuario registrado exitosamente" });
+                    return true;
                 } catch (error) {
-                    setStore({ signupError: "Error en la conexión con el servidor" });
+                    setStore({  ...getStore(), signupError: "Error en la conexión con el servidor" });
+                    return false;
                 }
             },
             getUsers: async () => {

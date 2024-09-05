@@ -12,9 +12,16 @@ const Signup = () => {
     const [confirmPassword, setConfirmPassword] = useState("");
     const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        actions.signup(firstName, lastName, email, password, confirmPassword);
+        let estado= await actions.signup(firstName, lastName, email, password, confirmPassword);
+        if(estado){
+            await new Promise((resolve) => setTimeout(resolve, 3000));
+            actions.cleanBanner()
+            navigate("/signin");
+        }else{
+
+        }
     };
 
     const handleLoginRedirect = () => {
@@ -80,7 +87,7 @@ const Signup = () => {
                         />
                     </Form.Group>
 
-                    <Button variant="primary" type="submit" className="mt-3 w-100">
+                    <Button variant="primary" type="submit" className="mt-3 w-100" >
                         Registrar
                     </Button>
                 </Form>
