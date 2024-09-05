@@ -39,7 +39,8 @@ def signup():
         first_name=first_name,
         last_name=last_name,
         email=email,
-        password=generate_password_hash(password)
+        # password=generate_password_hash(password)
+        password=password
     )
      # Agrega el nuevo usuario a la BD
     db.session.add(new_user)
