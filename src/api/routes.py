@@ -1,22 +1,24 @@
-from flask import Flask, request, jsonify, url_for, Blueprint
+from flask import Flask, request, jsonify, Blueprint
 from api.models import db, User
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
-from werkzeug.security import generate_password_hash
+from flask_bcrypt import Bcrypt  # Importa Bcrypt
 
 api = Blueprint('api', __name__)
+
+# Inicializa Bcrypt
+bcrypt = Bcrypt()
 
 # Allow CORS requests to this API
 CORS(api, resources={r"/api/*": {"origins": "*"}})
 
-
-
 @api.route('/signup', methods=['POST'])
 def signup():
-    body=request.get_json()
+    body = request.get_json()
     if not body:
         return jsonify({"error": "Falta request body"}), 400
-    #extrae datos dela solicitud
+
+    # Extrae datos del request
     first_name = body.get('first_name')
     last_name = body.get('last_name')
     email = body.get('email')
@@ -28,21 +30,23 @@ def signup():
 
     if password != confirm_password:
         return jsonify({"error": "Las contraseñas no coinciden"}), 400
-    
-    # Ahora vamos a verificar si el usuario ya existe
+
+    # Verificar si el usuario ya existe
     user = User.query.filter_by(email=email).first()
     if user:
         return jsonify({"error": "El usuario ya existe"}), 400
 
-    # Crear un nuevo usuario
+    # Crear un nuevo usuario con la contraseña hasheada
+    hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+
     new_user = User(
         first_name=first_name,
         last_name=last_name,
         email=email,
-        # password=generate_password_hash(password)
-        password=password
+        password=hashed_password  # Guarda la contraseña hasheada
     )
-     # Agrega el nuevo usuario a la BD
+
+    # Agregar el nuevo usuario a la base de datos
     db.session.add(new_user)
     db.session.commit()
 
