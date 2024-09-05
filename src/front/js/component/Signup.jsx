@@ -1,44 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { Form, Button, Alert } from "react-bootstrap";
+import { Context } from "../store/appContext.js"; // Asegúrate de importar el contexto adecuado
 
 const Signup = () => {
+    const { store, actions } = useContext(Context); // Acceder a store y actions desde Flux
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
-    const [error, setError] = useState(null);
     const navigate = useNavigate();
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
-
-        if (password !== confirmPassword) {
-            setError("Passwords do not match");
-            return;
-        }
-
-        const response = await fetch(process.env.REACT_APP_BACKEND_URL + "/signup", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                first_name: firstName,
-                last_name: lastName,
-                email: email,
-                password: password,
-                confirm_password: confirmPassword,
-            }),
-        });
-
-        if (response.ok) {
-            navigate("/signin");
-        } else {
-            const data = await response.json();
-            setError(data.error || "An error occurred during registration");
-        }
+        actions.signup(firstName, lastName, email, password, confirmPassword);
     };
 
     const handleLoginRedirect = () => {
@@ -49,7 +25,8 @@ const Signup = () => {
         <div className="d-flex justify-content-center align-items-center vh-100 bg-dark">
             <div className="bg-secondary p-5 rounded shadow" style={{ maxWidth: "400px", width: "100%" }}>
                 <h2 className="text-center mb-4 text-white">Register</h2>
-                {error && <Alert variant="danger">{error}</Alert>}
+                {store.signupError && <Alert variant="danger">{store.signupError}</Alert>}
+                {store.signupSuccess && <Alert variant="success">{store.signupSuccess}</Alert>}
                 <Form onSubmit={handleSubmit}>
                     <Form.Group controlId="firstName">
                         <Form.Label>First Name</Form.Label>
@@ -88,6 +65,7 @@ const Signup = () => {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
+                            autocomplete="new-password"
                         />
                     </Form.Group>
 
@@ -98,6 +76,7 @@ const Signup = () => {
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
                             required
+                            autocomplete="new-password"
                         />
                     </Form.Group>
 

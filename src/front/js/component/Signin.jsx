@@ -11,7 +11,7 @@ const Signin = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const response = await fetch(process.env.REACT_APP_BACKEND_URL + "/signin", {
+        const response = await fetch(process.env.BACKEND_URL + "/signin", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

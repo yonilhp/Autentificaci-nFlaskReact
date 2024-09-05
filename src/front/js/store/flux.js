@@ -1,54 +1,70 @@
 const getState = ({ getStore, getActions, setStore }) => {
-	return {
-		store: {
-			message: null,
-			demo: [
-				{
-					title: "FIRST",
-					background: "white",
-					initial: "white"
-				},
-				{
-					title: "SECOND",
-					background: "white",
-					initial: "white"
-				}
-			]
-		},
-		actions: {
-			// Use getActions to call a function within a fuction
-			exampleFunction: () => {
-				getActions().changeColor(0, "green");
-			},
+    return {
+        store: {
+            message: null,
+            user: null, // Estado para almacenar los datos del usuario
+            signupError: null,
+            signupSuccess: null,
+        },
+        actions: {
+            // Acción para registrar un nuevo usuario
+            signup: async (firstName, lastName, email, password, confirmPassword) => {
+                const store = getStore();
 
-			getMessage: async () => {
-				try{
-					// fetching data from the backend
-					const resp = await fetch(process.env.BACKEND_URL + "/api/hello")
-					const data = await resp.json()
-					setStore({ message: data.message })
-					// don't forget to return something, that is how the async resolves
-					return data;
-				}catch(error){
-					console.log("Error loading message from backend", error)
-				}
-			},
-			changeColor: (index, color) => {
-				//get the store
-				const store = getStore();
+                // Reseteamos posibles errores y mensajes de éxito previos
+                setStore({
+                    signupError: null,
+                    signupSuccess: null
+                });
 
-				//we have to loop the entire demo array to look for the respective index
-				//and change its color
-				const demo = store.demo.map((elm, i) => {
-					if (i === index) elm.background = color;
-					return elm;
-				});
+                if (password !== confirmPassword) {
+                    setStore({ signupError: "Las contraseñas no coinciden" });
+                    return;
+                }
 
-				//reset the global store
-				setStore({ demo: demo });
-			}
-		}
-	};
+                try {
+                    const response = await fetch(process.env.BACKEND_URL + "/api/signup", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            first_name: firstName,
+                            last_name: lastName,
+                            email: email,
+                            password: password,
+                            confirm_password: confirmPassword,
+                        }),
+                    });
+
+                    if (!response.ok) {
+                        const data = await response.json();
+                        setStore({ signupError: data.error || "Error al registrarse" });
+                        return;
+                    }
+
+                    setStore({ signupSuccess: "Usuario registrado exitosamente" });
+                } catch (error) {
+                    setStore({ signupError: "Error en la conexión con el servidor" });
+                }
+            },
+
+            // Acción para obtener un mensaje
+            getMessage: async () => {
+                try {
+                    const response = await fetch(process.env.BACKEND_URL + "/message");
+                    if (response.ok) {
+                        const data = await response.json();
+                        setStore({ message: data.message });
+                    } else {
+                        setStore({ message: "Error obteniendo el mensaje" });
+                    }
+                } catch (error) {
+                    setStore({ message: "Error de conexión con el servidor" });
+                }
+            },
+        }
+    };
 };
 
 export default getState;

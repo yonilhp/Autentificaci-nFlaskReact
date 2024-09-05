@@ -7,7 +7,8 @@ from werkzeug.security import generate_password_hash
 api = Blueprint('api', __name__)
 
 # Allow CORS requests to this API
-CORS(api)
+CORS(api, resources={r"/api/*": {"origins": "*"}})
+
 
 
 @api.route('/signup', methods=['POST'])
