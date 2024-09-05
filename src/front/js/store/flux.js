@@ -5,6 +5,8 @@ const getState = ({ getStore, getActions, setStore }) => {
             user: null, // Estado para almacenar los datos del usuario
             signupError: null,
             signupSuccess: null,
+            users: [],
+            usersError: null,
         },
         actions: {
             // Acción para registrar un nuevo usuario
@@ -46,6 +48,22 @@ const getState = ({ getStore, getActions, setStore }) => {
                     setStore({ signupSuccess: "Usuario registrado exitosamente" });
                 } catch (error) {
                     setStore({ signupError: "Error en la conexión con el servidor" });
+                }
+            },
+            getUsers: async () => {
+                const store = getStore();
+
+                try {
+                    const response = await fetch(process.env.BACKEND_URL + "/api/users");
+                    if (response.ok) {
+                        const data = await response.json();
+                        setStore({ users: data });
+                    } else {
+                        const data = await response.json();
+                        setStore({ usersError: data.error || "Error al obtener usuarios" });
+                    }
+                } catch (error) {
+                    setStore({ usersError: "Error en la conexión con el servidor" });
                 }
             },
 
