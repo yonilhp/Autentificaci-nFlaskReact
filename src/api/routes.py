@@ -18,27 +18,36 @@ SECRET_KEY = 'your_secret_key_here'
 
 @api.route('/signin', methods=['POST'])
 def signin():
-    body = request.get_json()
-    if not body:
-        return jsonify({"error": "Falta request body"}), 400
+    try:
+        body = request.get_json()
+        if not body:
+            return jsonify({"error": "Falta request body"}), 400
 
-    email = body.get('email')
-    password = body.get('password')
+        email = body.get('email')
+        password = body.get('password')
 
-    if not email or not password:
-        return jsonify({"error": "Email y contraseña son obligatorios"}), 400
+        if not email or not password:
+            return jsonify({"error": "Email y contraseña son obligatorios"}), 400
 
-    user = User.query.filter_by(email=email).first()
-    if not user or not bcrypt.check_password_hash(user.password, password):
-        return jsonify({"error": "Credenciales inválidas"}), 401
+        user = User.query.filter_by(email=email).first()
+        if not user or not bcrypt.check_password_hash(user.password, password):
+            return jsonify({"error": "Credenciales inválidas"}), 401
 
-    # Generar un token JWT
-    token = jwt.encode({
-        'user_id': user.id,
-        'exp': datetime.datetime.now() + datetime.timedelta(hours=1)  # Expira en 1 hora
-    }, SECRET_KEY, algorithm='HS256')
+        # Generar un token JWT
+        token = jwt.encode({
+            'user_id': user.id,
+            'exp': datetime.datetime.now() + datetime.timedelta(hours=1)  # Expira en 1 hora
+        }, SECRET_KEY, algorithm='HS256')
 
-    return jsonify({"token": token}), 200
+        # Devolver el token y un mensaje de éxito
+        return jsonify({
+            "message": "Inicio de sesión exitoso",
+            "token": token
+        }), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 
 @api.route('/signup', methods=['POST'])
 def signup():
