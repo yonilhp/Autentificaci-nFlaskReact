@@ -1,32 +1,26 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { Form, Button, Alert } from "react-bootstrap";
+import { Context } from "../store/appContext"; // Importa el contexto de Flux
 
 const Signin = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [error, setError] = useState(null);
+    const { store, actions } = useContext(Context);  // Accede al contexto
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const response = await fetch(process.env.BACKEND_URL + "/signin", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                email: email,
-                password: password,
-            }),
-        });
+        // Llamar a la acción login
+        const success = await actions.login(email, password);
 
-        if (response.ok) {
-            navigate("/dashboard"); // O la página a la que desees redirigir después del inicio de sesión
-        } else {
-            const data = await response.json();
-            setError(data.error || "An error occurred during login");
+        // Verifica si el login fue exitoso
+        if (success) {
+            // Verifica si el token está en el localStorage
+            // console.log('Token almacenado en localStorage:', localStorage.getItem('token'));
+
+            navigate("/dashboard"); // Redirige al Dashboard después del login
         }
     };
 
@@ -34,7 +28,7 @@ const Signin = () => {
         <div className="d-flex justify-content-center align-items-center vh-100 bg-dark">
             <div className="bg-secondary p-5 rounded shadow" style={{ maxWidth: "400px", width: "100%" }}>
                 <h2 className="text-center mb-4 text-white">Login</h2>
-                {error && <Alert variant="danger">{error}</Alert>}
+                {store.loginError && <Alert variant="danger">{store.loginError}</Alert>} {/* Muestra el error de login si ocurre */}
                 <Form onSubmit={handleSubmit}>
                     <Form.Group controlId="email">
                         <Form.Label>Email address</Form.Label>

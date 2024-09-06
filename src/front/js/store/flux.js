@@ -7,6 +7,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             signupSuccess: null,
             users: [],
             usersError: null,
+            loginError: null,  // Almacena el error en caso de que el login falle
         },
         actions: {
             // Acción para registrar un nuevo usuario
@@ -14,6 +15,37 @@ const getState = ({ getStore, getActions, setStore }) => {
                 let store=getStore()
                 setStore({...store,signupError: null,signupSuccess: null})
             },
+
+            login: async (email, password) => {
+                try {
+                    const response = await fetch(process.env.BACKEND_URL + "/api/signin", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            email: email,
+                            password: password,
+                        }),
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        // Almacena el token JWT en localStorage o en el store
+                        localStorage.setItem('token', data.token);
+                        setStore({ user: data.token, loginError: null });
+                        return true;  // Éxito
+                    } else {
+                        const data = await response.json();
+                        setStore({ loginError: data.error || "Error al iniciar sesión" });
+                        return false;  // Error en login
+                    }
+                } catch (error) {
+                    setStore({ loginError: "Error en la conexión con el servidor" });
+                    return false;  // Error en conexión
+                }
+            },
+
             signup: async (firstName, lastName, email, password, confirmPassword) => {
                 const store = getStore();
 
