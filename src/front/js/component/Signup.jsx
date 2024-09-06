@@ -31,12 +31,12 @@ const Signup = () => {
     return (
         <div className="d-flex justify-content-center align-items-center vh-100 bg-dark">
             <div className="bg-secondary p-5 rounded shadow" style={{ maxWidth: "400px", width: "100%" }}>
-                <h2 className="text-center mb-4 text-white">Register</h2>
+                <h2 className="text-center mb-4 text-white">Registro de usuarios</h2>
                 {store.signupError && <Alert variant="danger">{store.signupError}</Alert>}
                 {store.signupSuccess && <Alert variant="success">{store.signupSuccess}</Alert>}
                 <Form onSubmit={handleSubmit}>
                     <Form.Group controlId="firstName">
-                        <Form.Label>First Name</Form.Label>
+                        <Form.Label>Nombres</Form.Label>
                         <Form.Control
                             type="text"
                             value={firstName}
@@ -46,7 +46,7 @@ const Signup = () => {
                     </Form.Group>
 
                     <Form.Group controlId="lastName">
-                        <Form.Label>Last Name</Form.Label>
+                        <Form.Label>Apellidos</Form.Label>
                         <Form.Control
                             type="text"
                             value={lastName}
@@ -56,7 +56,7 @@ const Signup = () => {
                     </Form.Group>
 
                     <Form.Group controlId="email">
-                        <Form.Label>Email address</Form.Label>
+                        <Form.Label>Correo electrónico</Form.Label>
                         <Form.Control
                             type="email"
                             value={email}
@@ -66,7 +66,7 @@ const Signup = () => {
                     </Form.Group>
 
                     <Form.Group controlId="password">
-                        <Form.Label>Password</Form.Label>
+                        <Form.Label>Contraseña</Form.Label>
                         <Form.Control
                             type="password"
                             value={password}
@@ -77,7 +77,7 @@ const Signup = () => {
                     </Form.Group>
 
                     <Form.Group controlId="confirmPassword">
-                        <Form.Label>Confirm Password</Form.Label>
+                        <Form.Label>Confirmar contraseña</Form.Label>
                         <Form.Control
                             type="password"
                             value={confirmPassword}

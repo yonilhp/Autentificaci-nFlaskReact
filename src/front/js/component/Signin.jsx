@@ -31,7 +31,7 @@ const Signin = () => {
                 {store.loginError && <Alert variant="danger">{store.loginError}</Alert>} {/* Muestra el error de login si ocurre */}
                 <Form onSubmit={handleSubmit}>
                     <Form.Group controlId="email">
-                        <Form.Label>Email address</Form.Label>
+                        <Form.Label>Correo electrónico</Form.Label>
                         <Form.Control
                             type="email"
                             value={email}
@@ -41,7 +41,7 @@ const Signin = () => {
                     </Form.Group>
 
                     <Form.Group controlId="password">
-                        <Form.Label>Password</Form.Label>
+                        <Form.Label>Contraseña</Form.Label>
                         <Form.Control
                             type="password"
                             value={password}
@@ -51,20 +51,20 @@ const Signin = () => {
                     </Form.Group>
 
                     <Button variant="primary" type="submit" className="mt-3 w-100">
-                        Login
+                        Iniciar sesión
                     </Button>
                 </Form>
 
                 <div className="text-center mt-3">
                     <Button variant="link" className="text-white" onClick={() => navigate("/forgot-password")}>
-                        Forgot your password?
+                        Olvidé mi contraseña
                     </Button>
                 </div>
 
                 <div className="text-center mt-3">
-                    <span className="text-white">New here? </span>
+                    <span className="text-white">Eres nuevo? </span>
                     <Button variant="link" className="text-white font-weight-bold" onClick={() => navigate("/signup")}>
-                        Sign Up
+                        Registrate aquí
                     </Button>
                 </div>
             </div>
