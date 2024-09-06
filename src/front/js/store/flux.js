@@ -90,7 +90,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             },
             getUsers: async () => {
                 const store = getStore();
-
+            
                 try {
                     const response = await fetch(process.env.BACKEND_URL + "/api/users");
                     if (response.ok) {

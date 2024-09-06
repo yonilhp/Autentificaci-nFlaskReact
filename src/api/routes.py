@@ -15,6 +15,8 @@ bcrypt = Bcrypt()
 # Configura la clave secreta desde las variables de entorno
 SECRET_KEY = os.getenv('SECRET_KEY', 'your_secret_key_here')
 
+
+
 # Allow CORS requests to this API
 CORS(api, resources={r"/api/*": {"origins": "*"}})
 
