@@ -3,7 +3,8 @@ from api.models import db, User
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from flask_bcrypt import Bcrypt  # Importa Bcrypt
-
+import jwt
+import datetime
 api = Blueprint('api', __name__)
 
 # Inicializa Bcrypt
@@ -11,6 +12,33 @@ bcrypt = Bcrypt()
 
 # Allow CORS requests to this API
 CORS(api, resources={r"/api/*": {"origins": "*"}})
+
+# Define una clave secreta para la codificación del JWT
+SECRET_KEY = 'your_secret_key_here'
+
+@api.route('/signin', methods=['POST'])
+def signin():
+    body = request.get_json()
+    if not body:
+        return jsonify({"error": "Falta request body"}), 400
+
+    email = body.get('email')
+    password = body.get('password')
+
+    if not email or not password:
+        return jsonify({"error": "Email y contraseña son obligatorios"}), 400
+
+    user = User.query.filter_by(email=email).first()
+    if not user or not bcrypt.check_password_hash(user.password, password):
+        return jsonify({"error": "Credenciales inválidas"}), 401
+
+    # Generar un token JWT
+    token = jwt.encode({
+        'user_id': user.id,
+        'exp': datetime.datetime.now() + datetime.timedelta(hours=1)  # Expira en 1 hora
+    }, SECRET_KEY, algorithm='HS256')
+
+    return jsonify({"token": token}), 200
 
 @api.route('/signup', methods=['POST'])
 def signup():
@@ -39,6 +67,14 @@ def signup():
     # Crear un nuevo usuario con la contraseña hasheada
     hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
 
+    # **Prueba para verificar si el hash y la contraseña son válidos**
+    # Comprobamos si el hash generado puede validarse correctamente
+    password_is_valid = bcrypt.check_password_hash(hashed_password, password)
+
+    if not password_is_valid:
+        return jsonify({"error": "Hubo un problema al verificar la contraseña hasheada"}), 500
+
+    # Si todo está bien, continúa creando el nuevo usuario
     new_user = User(
         first_name=first_name,
         last_name=last_name,
@@ -51,6 +87,7 @@ def signup():
     db.session.commit()
 
     return jsonify({"message": "Usuario registrado"}), 201
+
 
 @api.route('/users', methods=['GET'])
 def get_users():
